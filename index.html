@@ -2101,8 +2101,12 @@
       lastTap: 0,
       doubleTapDelay: 300,
 
+      isTouchDevice: function() {
+        return ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+      },
+
       init: function(canvas) {
-        if (!('ontouchstart' in window)) return;
+        if (!this.isTouchDevice()) return;
         
         this.enabled = true;
         this.canvas = canvas;
@@ -2116,7 +2120,6 @@
         e.preventDefault();
         if (e.touches.length === 1) {
           var touch = e.touches[0];
-          var rect = this.canvas.getBoundingClientRect();
           var mouseEvent = new MouseEvent('mousedown', {
             clientX: touch.clientX,
             clientY: touch.clientY,
@@ -2140,11 +2143,14 @@
           });
           this.canvas.dispatchEvent(mouseEvent);
           
-          // Also dispatch drag event for CAKE compatibility
-          var dragEvent = document.createEvent('MouseEvents');
-          dragEvent.initMouseEvent('drag', true, true, window, 0,
-            touch.screenX, touch.screenY, touch.clientX, touch.clientY,
-            false, false, false, false, 0, null);
+          // Create a custom drag event for CAKE compatibility
+          var dragEvent = new CustomEvent('drag', {
+            bubbles: true,
+            detail: {
+              clientX: touch.clientX,
+              clientY: touch.clientY
+            }
+          });
           this.canvas.dispatchEvent(dragEvent);
         }
       },
@@ -2311,8 +2317,8 @@
     };
 
     init = function() {
-      // Use feature detection instead of user agent sniffing
-      var isMobile = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+      // Use shared feature detection from TouchControls
+      var isMobile = TouchControls.isTouchDevice();
       var width = isMobile ? Math.min(640, window.innerWidth) : 640;
       var height = isMobile ? Math.min(480, window.innerHeight - 100) : 480;
       
