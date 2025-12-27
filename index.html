@@ -1174,9 +1174,14 @@
       initialize : function() {
         CanvasNode.initialize.call(this)
         this.ships = {}
-        this.bg = new Rectangle(this.width, this.height)
+        // Create background covering entire canvas, not just game area
+        // Use large dimensions to ensure full coverage regardless of viewport size
+        this.bg = new Rectangle(10000, 10000)
         this.bg.fill = this.bgColor
         this.bg.fillOpacity = this.bgOpacity
+        // Center the background
+        this.bg.x = -5000 + 320  // 320 is half of 640 (game width)
+        this.bg.y = -5000 + 240  // 240 is half of 480 (game height)
         var selectionStart, startX, startY
         var th = this
         var playerShipsInside = function(rect) {
@@ -2544,8 +2549,8 @@
     /* Fullscreen and Mobile Controls */
     #fullscreen-controls {
       position: fixed;
-      top: 20px;
-      right: 20px;
+      bottom: 20px;
+      left: 20px;
       z-index: 9999;
     }
 
@@ -2658,8 +2663,8 @@
     /* Landscape mobile optimization */
     @media (max-width: 768px) and (orientation: landscape) {
       #fullscreen-controls {
-        top: 10px;
-        right: 10px;
+        bottom: 10px;
+        left: 10px;
       }
     }
   </style>
