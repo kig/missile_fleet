@@ -2124,6 +2124,7 @@
             bubbles: true
           });
           this.canvas.dispatchEvent(mouseEvent);
+          this.touchStartTime = Date.now();
         }
       },
 
@@ -2131,24 +2132,34 @@
         e.preventDefault();
         if (e.touches.length === 1) {
           var touch = e.touches[0];
-          var mouseEvent = new MouseEvent('drag', {
+          var mouseEvent = new MouseEvent('mousemove', {
             clientX: touch.clientX,
             clientY: touch.clientY,
             button: 0,
             bubbles: true
           });
           this.canvas.dispatchEvent(mouseEvent);
+          
+          // Also dispatch drag event for CAKE compatibility
+          var dragEvent = document.createEvent('MouseEvents');
+          dragEvent.initMouseEvent('drag', true, true, window, 0,
+            touch.screenX, touch.screenY, touch.clientX, touch.clientY,
+            false, false, false, false, 0, null);
+          this.canvas.dispatchEvent(dragEvent);
         }
       },
 
       handleTouchEnd: function(e) {
         e.preventDefault();
         var now = Date.now();
+        var touchDuration = now - (this.touchStartTime || 0);
         
-        if (now - this.lastTap < this.doubleTapDelay) {
+        // Only detect double-tap if it was a quick tap (not a drag)
+        if (touchDuration < 200 && now - this.lastTap < this.doubleTapDelay) {
           Player.clearSelection();
           this.lastTap = 0;
-        } else {
+          return; // Don't dispatch mouseup for double-tap
+        } else if (touchDuration < 200) {
           this.lastTap = now;
         }
         
@@ -2220,7 +2231,13 @@
         
         if (this.infoVisible) {
           var content = document.getElementById('info-content');
-          content.innerHTML = debugContent.innerHTML;
+          // Use cloneNode for safer DOM manipulation
+          while (content.firstChild) {
+            content.removeChild(content.firstChild);
+          }
+          var clonedContent = debugContent.cloneNode(true);
+          clonedContent.id = 'debug-clone';
+          content.appendChild(clonedContent);
           overlay.style.display = 'block';
         } else {
           overlay.style.display = 'none';
@@ -2294,7 +2311,8 @@
     };
 
     init = function() {
-      var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      // Use feature detection instead of user agent sniffing
+      var isMobile = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
       var width = isMobile ? Math.min(640, window.innerWidth) : 640;
       var height = isMobile ? Math.min(480, window.innerHeight - 100) : 480;
       
