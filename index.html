@@ -1959,7 +1959,7 @@
         this.canvas.handleDraw = function(ctx) {
           if (gameArea) {
             ctx.save();
-            // Clear entire canvas first
+            // Clear entire canvas with black background covering full canvas dimensions
             ctx.setTransform(1, 0, 0, 1, 0, 0);
             ctx.fillStyle = '#000000';
             ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
@@ -2474,7 +2474,7 @@
       font-size: 3vw;
       text-align: center;
       position: absolute;
-      width: 100%;
+      width: 100vw;
       top: 5vh;
       left: 0;
       margin: 0;
