@@ -2144,6 +2144,36 @@
 
 
 
+    // Utility function to calculate game area with 4:3 aspect ratio
+    function calculateGameArea(w, h, dpr) {
+      var targetAspect = 4 / 3;
+      var canvasAspect = w / h;
+      var gameWidth, gameHeight, offsetX, offsetY;
+      
+      if (canvasAspect > targetAspect) {
+        // Canvas is wider than 4:3, fit to height
+        gameHeight = h;
+        gameWidth = gameHeight * targetAspect;
+        offsetX = (w - gameWidth) / 2;
+        offsetY = 0;
+      } else {
+        // Canvas is taller than 4:3, fit to width
+        gameWidth = w;
+        gameHeight = gameWidth / targetAspect;
+        offsetX = 0;
+        offsetY = (h - gameHeight) / 2;
+      }
+      
+      return {
+        width: gameWidth,
+        height: gameHeight,
+        offsetX: offsetX,
+        offsetY: offsetY,
+        scale: gameWidth / 640, // 640 is the base game width
+        dpr: dpr || 1
+      };
+    }
+
     TouchControls = {
       enabled: false,
       lastTap: 0,
@@ -2363,35 +2393,12 @@
         this.canvas.style.width = w + 'px';
         this.canvas.style.height = h + 'px';
         
-        // Calculate 4:3 aspect ratio fit
-        var targetAspect = 4 / 3;
-        var canvasAspect = w / h;
-        var gameWidth, gameHeight, offsetX, offsetY;
-        
-        if (canvasAspect > targetAspect) {
-          // Canvas is wider than 4:3, fit to height
-          gameHeight = h;
-          gameWidth = gameHeight * targetAspect;
-          offsetX = (w - gameWidth) / 2;
-          offsetY = 0;
-        } else {
-          // Canvas is taller than 4:3, fit to width
-          gameWidth = w;
-          gameHeight = gameWidth / targetAspect;
-          offsetX = 0;
-          offsetY = (h - gameHeight) / 2;
-        }
+        // Calculate game area using utility function
+        var gameArea = calculateGameArea(w, h, dpr);
         
         // Store game area dimensions for rendering
         if (MF && MF.canvas) {
-          MF.canvas.gameArea = {
-            width: gameWidth,
-            height: gameHeight,
-            offsetX: offsetX,
-            offsetY: offsetY,
-            scale: gameWidth / 640, // 640 is the base game width
-            dpr: dpr
-          };
+          MF.canvas.canvas.gameArea = gameArea;
         }
         
         screen.style.left = '0';
@@ -2412,24 +2419,8 @@
       c.style.width = w + 'px';
       c.style.height = h + 'px';
       
-      // Calculate 4:3 aspect ratio fit
-      var targetAspect = 4 / 3;
-      var canvasAspect = w / h;
-      var gameWidth, gameHeight, offsetX, offsetY;
-      
-      if (canvasAspect > targetAspect) {
-        // Canvas is wider than 4:3, fit to height
-        gameHeight = h;
-        gameWidth = gameHeight * targetAspect;
-        offsetX = (w - gameWidth) / 2;
-        offsetY = 0;
-      } else {
-        // Canvas is taller than 4:3, fit to width
-        gameWidth = w;
-        gameHeight = gameWidth / targetAspect;
-        offsetX = 0;
-        offsetY = (h - gameHeight) / 2;
-      }
+      // Calculate game area using utility function
+      var gameArea = calculateGameArea(w, h, dpr);
       
       var d = E('div', { id: 'screen' });
       d.appendChild(c);
@@ -2437,14 +2428,7 @@
       MF = new MissileFleet(c);
       
       // Store game area dimensions on canvas for rendering
-      c.gameArea = {
-        width: gameWidth,
-        height: gameHeight,
-        offsetX: offsetX,
-        offsetY: offsetY,
-        scale: gameWidth / 640, // 640 is the base game width
-        dpr: dpr
-      };
+      c.gameArea = gameArea;
       
       TouchControls.init(c);
       FullscreenMode.init(c);
