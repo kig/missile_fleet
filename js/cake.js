@@ -1,13 +1,3 @@
-
-var _____WB$wombat$assign$function_____=function(name){return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name))||self[name];};if(!self.__WB_pmw){self.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
-let window = _____WB$wombat$assign$function_____("window");
-let self = _____WB$wombat$assign$function_____("self");
-let document = _____WB$wombat$assign$function_____("document");
-let location = _____WB$wombat$assign$function_____("location");
-let top = _____WB$wombat$assign$function_____("top");
-let parent = _____WB$wombat$assign$function_____("parent");
-let frames = _____WB$wombat$assign$function_____("frames");
-let opens = _____WB$wombat$assign$function_____("opens");
 /*
 CAKE - Canvas Animation Kit Experiment
 
@@ -7668,23 +7658,4 @@ SVGParser = {
 }
 
 }
-/*
-     FILE ARCHIVED ON 03:21:55 Feb 07, 2011 AND RETRIEVED FROM THE
-     INTERNET ARCHIVE ON 14:46:16 Dec 26, 2025.
-     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
 
-     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
-     SECTION 108(a)(3)).
-*/
-/*
-playback timings (ms):
-  captures_list: 0.642
-  exclusion.robots: 0.02
-  exclusion.robots.policy: 0.009
-  esindex: 0.011
-  cdx.remote: 21.904
-  LoadShardBlock: 123.499 (3)
-  PetaboxLoader3.datanode: 202.887 (4)
-  load_resource: 396.04
-  PetaboxLoader3.resolve: 303.934
-*/
