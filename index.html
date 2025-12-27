@@ -1981,15 +1981,16 @@
         };
         
         // Override mouse coordinate handling for game area
-        if (gameArea) {
-          var originalAddMouseEvent = this.canvas.canvas.parentNode.addMouseEvent;
+        if (gameArea && this.canvas.canvas.parentNode) {
+          var parentNode = this.canvas.canvas.parentNode;
           var th = this.canvas;
-          this.canvas.canvas.parentNode.addMouseEvent = function(e) {
+          parentNode.addMouseEvent = function(e) {
             var xy = Mouse.getRelativeCoords(this, e);
             th.absoluteMouseX = xy.x;
             th.absoluteMouseY = xy.y;
             
             // Transform mouse coordinates to game area space
+            // Mouse coords are in CSS pixels, need to subtract offset and divide by scale
             var mouseX = (th.absoluteMouseX - gameArea.offsetX) / gameArea.scale;
             var mouseY = (th.absoluteMouseY - gameArea.offsetY) / gameArea.scale;
             
@@ -2396,9 +2397,26 @@
         // Calculate game area using utility function
         var gameArea = calculateGameArea(w, h, dpr);
         
-        // Store game area dimensions for rendering
-        if (MF && MF.canvas) {
-          MF.canvas.canvas.gameArea = gameArea;
+        // Update game area dimensions for rendering
+        if (MF && MF.canvas && MF.canvas.canvas) {
+          // Update the stored gameArea on the canvas element
+          this.canvas.gameArea = gameArea;
+          // Also trigger re-initialization of mouse handlers if needed
+          if (MF.canvas.canvas.parentNode && MF.canvas.canvas.parentNode.addMouseEvent) {
+            var th = MF.canvas;
+            MF.canvas.canvas.parentNode.addMouseEvent = function(e) {
+              var xy = Mouse.getRelativeCoords(this, e);
+              th.absoluteMouseX = xy.x;
+              th.absoluteMouseY = xy.y;
+              
+              var mouseX = (th.absoluteMouseX - gameArea.offsetX) / gameArea.scale;
+              var mouseY = (th.absoluteMouseY - gameArea.offsetY) / gameArea.scale;
+              
+              th.mouseX = mouseX;
+              th.mouseY = mouseY;
+              th.addMouseEvent(th.mouseX, th.mouseY, th.mouseDown);
+            };
+          }
         }
         
         screen.style.left = '0';
