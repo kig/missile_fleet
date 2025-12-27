@@ -1,6 +1,7 @@
 
 <html>
 <head>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>MISSILE FLEET</title>
   <script type="text/javascript" src="js/cake.js"></script>
@@ -1951,6 +1952,53 @@
         this.canvas.append(this)
         this.canvas.fixedTimestep = true
         this.canvas.clear = false
+        
+        // Override handleDraw to apply game area transformation
+        var originalHandleDraw = this.canvas.handleDraw.bind(this.canvas);
+        var gameArea = canvasElem.gameArea;
+        this.canvas.handleDraw = function(ctx) {
+          if (gameArea) {
+            ctx.save();
+            // Clear entire canvas first
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvasElem.width, canvasElem.height);
+            
+            // Apply DPR scaling first
+            ctx.scale(gameArea.dpr, gameArea.dpr);
+            
+            // Center the game area
+            ctx.translate(gameArea.offsetX, gameArea.offsetY);
+            
+            // Scale to fit the game area while maintaining 4:3 aspect ratio
+            ctx.scale(gameArea.scale, gameArea.scale);
+            
+            originalHandleDraw(ctx);
+            ctx.restore();
+          } else {
+            originalHandleDraw(ctx);
+          }
+        };
+        
+        // Override mouse coordinate handling for game area
+        if (gameArea) {
+          var originalAddMouseEvent = this.canvas.canvas.parentNode.addMouseEvent;
+          var th = this.canvas;
+          this.canvas.canvas.parentNode.addMouseEvent = function(e) {
+            var xy = Mouse.getRelativeCoords(this, e);
+            th.absoluteMouseX = xy.x;
+            th.absoluteMouseY = xy.y;
+            
+            // Transform mouse coordinates to game area space
+            var mouseX = (th.absoluteMouseX - gameArea.offsetX) / gameArea.scale;
+            var mouseY = (th.absoluteMouseY - gameArea.offsetY) / gameArea.scale;
+            
+            th.mouseX = mouseX;
+            th.mouseY = mouseY;
+            th.addMouseEvent(th.mouseX, th.mouseY, th.mouseDown);
+          };
+        }
+        
         this.gameOver()
         this.setupEtc()
       },
@@ -2305,28 +2353,98 @@
         if (!this.canvas) return;
         
         var screen = document.getElementById('screen');
-        if (this.isFullscreen) {
-          var w = window.innerWidth;
-          var h = window.innerHeight;
-          screen.style.left = '0';
-          screen.style.top = '0';
-          screen.style.width = w + 'px';
-          screen.style.height = h + 'px';
+        var w = window.innerWidth;
+        var h = window.innerHeight;
+        var dpr = window.devicePixelRatio || 1;
+        
+        // Set canvas size to full viewport with DPR
+        this.canvas.width = w * dpr;
+        this.canvas.height = h * dpr;
+        this.canvas.style.width = w + 'px';
+        this.canvas.style.height = h + 'px';
+        
+        // Calculate 4:3 aspect ratio fit
+        var targetAspect = 4 / 3;
+        var canvasAspect = w / h;
+        var gameWidth, gameHeight, offsetX, offsetY;
+        
+        if (canvasAspect > targetAspect) {
+          // Canvas is wider than 4:3, fit to height
+          gameHeight = h;
+          gameWidth = gameHeight * targetAspect;
+          offsetX = (w - gameWidth) / 2;
+          offsetY = 0;
+        } else {
+          // Canvas is taller than 4:3, fit to width
+          gameWidth = w;
+          gameHeight = gameWidth / targetAspect;
+          offsetX = 0;
+          offsetY = (h - gameHeight) / 2;
         }
+        
+        // Store game area dimensions for rendering
+        if (MF && MF.canvas) {
+          MF.canvas.gameArea = {
+            width: gameWidth,
+            height: gameHeight,
+            offsetX: offsetX,
+            offsetY: offsetY,
+            scale: gameWidth / 640, // 640 is the base game width
+            dpr: dpr
+          };
+        }
+        
+        screen.style.left = '0';
+        screen.style.top = '0';
+        screen.style.width = w + 'px';
+        screen.style.height = h + 'px';
       }
     };
 
     init = function() {
-      // Use shared feature detection from TouchControls
-      var isMobile = TouchControls.isTouchDevice();
-      var width = isMobile ? Math.min(640, window.innerWidth) : 640;
-      var height = isMobile ? Math.min(480, window.innerHeight - 100) : 480;
+      // Calculate viewport dimensions
+      var w = window.innerWidth;
+      var h = window.innerHeight;
+      var dpr = window.devicePixelRatio || 1;
       
-      var c = E.canvas(width, height);
+      // Create canvas at full viewport size with DPR
+      var c = E.canvas(w * dpr, h * dpr);
+      c.style.width = w + 'px';
+      c.style.height = h + 'px';
+      
+      // Calculate 4:3 aspect ratio fit
+      var targetAspect = 4 / 3;
+      var canvasAspect = w / h;
+      var gameWidth, gameHeight, offsetX, offsetY;
+      
+      if (canvasAspect > targetAspect) {
+        // Canvas is wider than 4:3, fit to height
+        gameHeight = h;
+        gameWidth = gameHeight * targetAspect;
+        offsetX = (w - gameWidth) / 2;
+        offsetY = 0;
+      } else {
+        // Canvas is taller than 4:3, fit to width
+        gameWidth = w;
+        gameHeight = gameWidth / targetAspect;
+        offsetX = 0;
+        offsetY = (h - gameHeight) / 2;
+      }
+      
       var d = E('div', { id: 'screen' });
       d.appendChild(c);
       document.body.appendChild(d);
       MF = new MissileFleet(c);
+      
+      // Store game area dimensions on canvas for rendering
+      c.gameArea = {
+        width: gameWidth,
+        height: gameHeight,
+        offsetX: offsetX,
+        offsetY: offsetY,
+        scale: gameWidth / 640, // 640 is the base game width
+        dpr: dpr
+      };
       
       TouchControls.init(c);
       FullscreenMode.init(c);
@@ -2403,13 +2521,13 @@
       margin-bottom: 8px;
     }
     #screen {
-      width: 640px;
-      height: 480px;
-      position: absolute;
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
       cursor: default;
       overflow: hidden;
-      left: 40px;
-      top: 40px;
+      left: 0;
+      top: 0;
     }
     #debug {
       color: #828292;
@@ -2519,19 +2637,6 @@
         bottom: auto;
       }
 
-      #screen {
-        left: 0;
-        top: 0;
-        width: 100vw !important;
-        height: calc(100vh - 60px) !important;
-        position: relative;
-      }
-
-      #screen canvas {
-        width: 100% !important;
-        height: 100% !important;
-      }
-
       #debug {
         display: none;
       }
@@ -2566,10 +2671,6 @@
 
     /* Landscape mobile optimization */
     @media (max-width: 768px) and (orientation: landscape) {
-      #screen {
-        height: 100vh !important;
-      }
-
       #fullscreen-controls {
         top: 10px;
         right: 10px;
