@@ -257,15 +257,15 @@ export const init = function () {
     d.addEventListener('click', function(e) {
         var canvas = c.canvas; // Get the Canvas instance
         
-        // Update mouse coordinates from the click event
-        var xy = Mouse.getRelativeCoords(this, e);
+        // Update mouse coordinates from the click event (same logic as CAKE's addMouseEvent)
+        var xy = Mouse.getRelativeCoords(d, e);
         canvas.absoluteMouseX = xy.x;
         canvas.absoluteMouseY = xy.y;
         var style = document.defaultView.getComputedStyle(c, "");
         var w = parseFloat(style.getPropertyValue('width'));
         var h = parseFloat(style.getPropertyValue('height'));
-        canvas.mouseX = canvas.absoluteMouseX * (w / c.width);
-        canvas.mouseY = canvas.absoluteMouseY * (h / c.height);
+        canvas.mouseX = canvas.absoluteMouseX * (c.width / w);
+        canvas.mouseY = canvas.absoluteMouseY * (c.height / h);
         
         // Manually trigger picking to update canvas.target
         var ctx = c.getContext('2d');
