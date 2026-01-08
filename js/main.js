@@ -56,6 +56,7 @@ export const MissileFleet = Klass(CanvasNode, {
         this.bg.fillOpacity = this.bgOpacity;
         this.bg.x = -2500;
         this.bg.y = -2500;
+        this.bg.catchMouse = false; // Don't intercept mouse events - let them pass to level backgrounds
         this.canvas.append(this.bg);
         const resize = () => {
             const iw = window.innerWidth * devicePixelRatio;
@@ -248,6 +249,32 @@ export const init = function () {
     d.appendChild(c);
     document.body.appendChild(d);
     var mf = new MissileFleet(c);
+
+    // Fix for click events: CAKE's picking system only runs during frame renders,
+    // so click events that occur between frames don't have the correct target set.
+    // We add a capturing click listener that manually triggers picking before the
+    // click event reaches CAKE's bubble-phase handler.
+    d.addEventListener('click', function(e) {
+        var canvas = c.canvas; // Get the Canvas instance
+        
+        // Update mouse coordinates from the click event
+        var xy = Mouse.getRelativeCoords(this, e);
+        canvas.absoluteMouseX = xy.x;
+        canvas.absoluteMouseY = xy.y;
+        var style = document.defaultView.getComputedStyle(c, "");
+        var w = parseFloat(style.getPropertyValue('width'));
+        var h = parseFloat(style.getPropertyValue('height'));
+        canvas.mouseX = canvas.absoluteMouseX * (w / c.width);
+        canvas.mouseY = canvas.absoluteMouseY * (h / c.height);
+        
+        // Manually trigger picking to update canvas.target
+        var ctx = c.getContext('2d');
+        canvas.previousTarget = canvas.target;
+        canvas.target = null;
+        if (canvas.catchMouse) {
+            canvas.handlePick(ctx);
+        }
+    }, true); // Use capture phase to run before CAKE's bubble-phase click handler
 
     TouchControls.init(c);
     FullscreenMode.init(c);
