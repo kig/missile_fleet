@@ -175,6 +175,11 @@ input {
     object-fit: contain;
 }
 
+:fullscreen #fullscreen-btn,
+:fullscreen #info-btn {
+    display: none;
+}
+
 /* Mobile Responsive Styles */
 @media (max-width: 480px) {
     #fullscreen-btn,
