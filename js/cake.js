@@ -3582,7 +3582,7 @@ Canvas = Klass(CanvasNode, {
   startTime : 0,
   realFps : 0,
   fixedTimestep : false,
-  playOnlyWhenFocused : true,
+  playOnlyWhenFocused : false,
   isPlaying : true,
   redrawOnlyWhenChanged : false,
   changed : true,
