@@ -1,4 +1,4 @@
-const CACHE_NAME = 'missile-fleet-v1';
+const CACHE_NAME = 'missile-fleet-v2';
 const urlsToCache = [
   './index.html',
   './manifest.json',
