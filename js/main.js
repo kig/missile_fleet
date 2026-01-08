@@ -51,22 +51,32 @@ export const MissileFleet = Klass(CanvasNode, {
         this.canvas.append(this);
         this.canvas.fixedTimestep = true;
         this.canvas.clear = false;
-        this.canvas.scale = Math.min(window.innerWidth / 640, window.innerHeight / 480);
-        this.canvas.x = (window.innerWidth - 640 * this.canvas.scale) / 2;
-        this.canvas.y = (window.innerHeight - 480 * this.canvas.scale) / 2;
         this.bg = new Rectangle(5000, 5000);
         this.bg.fill = this.bgColor;
         this.bg.fillOpacity = this.bgOpacity;
         this.bg.x = -2500;
         this.bg.y = -2500;
         this.canvas.append(this.bg);
-        window.addEventListener("resize", () => {
-            canvasElem.width = window.innerWidth;
-            canvasElem.height = window.innerHeight;
-            this.canvas.scale = Math.min(window.innerWidth / 640, window.innerHeight / 480);
-            this.canvas.x = (window.innerWidth - 640 * this.canvas.scale) / 2;
-            this.canvas.y = (window.innerHeight - 480 * this.canvas.scale) / 2;
-        });
+        const resize = () => {
+            const iw = window.innerWidth * devicePixelRatio;
+            const ih = window.innerHeight * devicePixelRatio;
+            canvasElem.width = iw;
+            canvasElem.height = ih;
+            this.canvas.scale = Math.min(iw / 640, ih / 480);
+            this.canvas.x = (iw - 640 * this.canvas.scale) / 2;
+            this.canvas.y = (ih - 480 * this.canvas.scale) / 2;
+            if (iw < ih) {
+                // portrait mode
+                this.canvas.rotation = Math.PI / 2;
+                this.canvas.scale = Math.min(ih / 640, iw / 480);
+                this.canvas.x = 480 * this.canvas.scale + (iw - 480 * this.canvas.scale) / 2;
+                this.canvas.y = (ih - 640 * this.canvas.scale) / 2;
+            } else {
+                this.canvas.rotation = 0;
+            }
+        }
+        resize();
+        window.addEventListener("resize", resize);
         this.gameOver();
         this.setupEtc();
     },
@@ -233,7 +243,7 @@ export const MissileFleet = Klass(CanvasNode, {
 });
 
 export const init = function () {
-    var c = E.canvas(innerWidth, innerHeight);
+    var c = E.canvas(innerWidth*devicePixelRatio, innerHeight*devicePixelRatio);
     var d = E("div", { id: "screen" });
     d.appendChild(c);
     document.body.appendChild(d);

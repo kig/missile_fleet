@@ -45,6 +45,7 @@ export const Level = Klass(CanvasNode, {
         this.bg.addEventListener(
             "mousedown",
             function (ev) {
+                console.log('bg mousedown');
                 ev.preventDefault();
                 var point = CanvasSupport.tMatrixMultiplyPoint(
                     CanvasSupport.tInvertMatrix(this.currentMatrix),

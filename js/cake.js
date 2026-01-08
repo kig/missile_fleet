@@ -4392,12 +4392,12 @@ ElementNode = Klass(CanvasNode, {
     }
     var xy = CanvasSupport.tMatrixMultiplyPoint(baseTransform.slice(0,4).concat([0,0]),
       xo, yo)
-    var x = this.currentMatrix[4] + xy[0]
-    var y = this.currentMatrix[5] + xy[1]
-    var a = this.currentMatrix[2]
-    var b = this.currentMatrix[3]
-    var c = this.currentMatrix[0]
-    var d = this.currentMatrix[1]
+    var x = this.currentMatrix[4] / devicePixelRatio + xy[0]
+    var y = this.currentMatrix[5] / devicePixelRatio + xy[1]
+    var a = this.currentMatrix[2] / devicePixelRatio
+    var b = this.currentMatrix[3] / devicePixelRatio
+    var c = this.currentMatrix[0] / devicePixelRatio
+    var d = this.currentMatrix[1] / devicePixelRatio
     var ys = Math.sqrt(a*a + b*b)
     var xs = Math.sqrt(c*c + d*d)
     if (ctx.fontFamily != null)
@@ -4406,7 +4406,7 @@ ElementNode = Klass(CanvasNode, {
     var wkt = CanvasSupport.isCSSTransformSupported()
     if (wkt && !this.noScaling) {
       this.element.style.MozTransform =
-      this.element.style.webkitTransform = 'matrix('+baseTransform.join(",")+')'
+      this.element.style.webkitTransform = 'matrix('+baseTransform.map(v => v/devicePixelRatio).join(",")+')'
     } else {
       this.element.style.MozTransform =
       this.element.style.webkitTransform = ''
