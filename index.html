@@ -10,21 +10,34 @@
         <link rel="stylesheet" href="css/style.css" />
         <link rel="manifest" href="./manifest.json" />
         <meta name="theme-color" content="#000000" />
-        <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="192x192"
+            href="icons/icon-192.png"
+        />
         <link rel="apple-touch-icon" href="icons/icon-192.png" />
-        <meta name="description" content="Missile Fleet - Real-Time Tactics Game" />
+        <meta
+            name="description"
+            content="Missile Fleet - Real-Time Tactics Game"
+        />
     </head>
     <body>
-        <div id="debug">
-            <h3>Real-time tactics game</h3>
-            <p>Find the right tactic to take out the blue fleet.</p>
-            <p>
-                Controls: click, shift-click, drag-select, or tap/drag on touch
-                devices. Double-tap to clear selection.
-            </p>
-            <p>The lines tell you what the ship is doing.</p>
-            <p>The size of the colored triangle tells the ship's level.</p>
-            <p>Some levels need a good deal of luck, so keep trying.</p>
+        <div id="info-overlay" class="hidden">
+            <div id="info-content">
+              <button id="close-info">×</button>
+              <div id="debug">
+                  <h3>Real-time tactics game</h3>
+                  <p>Find the right tactic to take out the blue fleet.</p>
+                  <p>
+                      Controls: click, shift-click, drag-select, or tap/drag on
+                      touch devices. Double-tap to clear selection.
+                  </p>
+                  <p>The lines tell you what the ship is doing.</p>
+                  <p>The size of the colored triangle tells the ship's level.</p>
+                  <p>Some levels need a good deal of luck, so keep trying.</p>
+              </div>
+            </div>
         </div>
         <script src="js/cake.js"></script>
         <script src="js/support.js"></script>

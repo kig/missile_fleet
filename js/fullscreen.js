@@ -2,12 +2,10 @@
 
 export const FullscreenMode = {
     isFullscreen: false,
-    infoVisible: false,
 
     init: function (canvas) {
         this.canvas = canvas;
         this.createButtons();
-        this.createInfoOverlay();
         this.setupFullscreenListeners();
     },
 
@@ -26,49 +24,19 @@ export const FullscreenMode = {
         infoBtn.id = "info-btn";
         infoBtn.innerHTML = "ⓘ";
         infoBtn.title = "Show Info";
-        infoBtn.onclick = this.toggleInfo.bind(this);
+        infoBtn.onclick = (ev) => {
+            ev.preventDefault();
+            document.getElementById("info-overlay").classList.remove('hidden');
+        };
+        var closeInfoBtn = document.getElementById("close-info");
+        closeInfoBtn.onclick = (ev) => {
+            ev.preventDefault();
+            document.getElementById("info-overlay").classList.add('hidden');
+        };
 
         container.appendChild(fullscreenBtn);
         container.appendChild(infoBtn);
         document.body.appendChild(container);
-    },
-
-    createInfoOverlay: function () {
-        var overlay = document.createElement("div");
-        overlay.id = "info-overlay";
-        overlay.style.display = "none";
-
-        var closeBtn = document.createElement("button");
-        closeBtn.id = "close-info";
-        closeBtn.innerHTML = "×";
-        closeBtn.onclick = this.toggleInfo.bind(this);
-
-        var content = document.createElement("div");
-        content.id = "info-content";
-
-        overlay.appendChild(closeBtn);
-        overlay.appendChild(content);
-        document.body.appendChild(overlay);
-    },
-
-    toggleInfo: function () {
-        this.infoVisible = !this.infoVisible;
-        var overlay = document.getElementById("info-overlay");
-        var debugContent = document.getElementById("debug");
-
-        if (this.infoVisible) {
-            var content = document.getElementById("info-content");
-            // Use cloneNode for safer DOM manipulation
-            while (content.firstChild) {
-                content.removeChild(content.firstChild);
-            }
-            var clonedContent = debugContent.cloneNode(true);
-            clonedContent.id = "debug-clone";
-            content.appendChild(clonedContent);
-            overlay.style.display = "block";
-        } else {
-            overlay.style.display = "none";
-        }
     },
 
     toggleFullscreen: function () {
@@ -109,10 +77,8 @@ export const FullscreenMode = {
 
             if (self.isFullscreen) {
                 document.body.classList.add("fullscreen-mode");
-                self.resizeCanvas();
             } else {
                 document.body.classList.remove("fullscreen-mode");
-                self.resizeCanvas();
             }
         };
 
@@ -120,11 +86,5 @@ export const FullscreenMode = {
         document.addEventListener("webkitfullscreenchange", fullscreenChange);
         document.addEventListener("mozfullscreenchange", fullscreenChange);
         document.addEventListener("MSFullscreenChange", fullscreenChange);
-
-        window.addEventListener("resize", this.resizeCanvas.bind(this));
-    },
-
-    resizeCanvas: function () {
-        // Resize is handled by CSS, no need to resize canvas element
-    },
+    }
 };

@@ -39,8 +39,22 @@
       "label": "Title Screen"
     },
     {
+     "src": "./screenshots/desktop_1.jpg",
+      "sizes": "1280x721",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Title Screen"
+    },
+    {
      "src": "./screenshots/mobile_1.jpg",
-      "sizes": "661x887",
+      "sizes": "640x960",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Title Screen"
+    },
+    {
+     "src": "./screenshots/mobile_1.jpg",
+      "sizes": "640x960",
       "type": "image/jpeg",
       "form_factor": "narrow",
       "label": "Title Screen"

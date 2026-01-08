@@ -606,13 +606,15 @@ export const MenuLevel = Klass(Level, {
         var bg = new ElementNode(
             E("div", {
                 style: {
-                    width: "640px",
-                    height: "480px",
+                    width: "100vw",
+                    height: "100vh",
+                    marginTop: "-50vh",
+                    marginLeft: "-50vw",
                     backgroundColor: this.bgColor,
                     opacity: 0.5,
                 },
             }),
-            { zIndex: 1001 }
+            { x: 320, y: 240, zIndex: 1001 }
         );
         controls.append(bg);
         controls.display = "none";
@@ -660,6 +662,7 @@ export const MenuLevel = Klass(Level, {
         this.bg.addEventListener(
             "click",
             function () {
+                console.log('click menu');
                 if (!th.menuVisible) {
                     th.showMenu();
                 }
