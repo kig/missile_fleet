@@ -264,8 +264,8 @@ export const init = function () {
         var style = document.defaultView.getComputedStyle(c, "");
         var w = parseFloat(style.getPropertyValue('width'));
         var h = parseFloat(style.getPropertyValue('height'));
-        canvas.mouseX = canvas.absoluteMouseX * (c.width / w);
-        canvas.mouseY = canvas.absoluteMouseY * (c.height / h);
+        canvas.mouseX = canvas.absoluteMouseX * (w / c.width);
+        canvas.mouseY = canvas.absoluteMouseY * (h / c.height);
         
         // Manually trigger picking to update canvas.target
         var ctx = c.getContext('2d');
