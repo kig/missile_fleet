@@ -206,3 +206,9 @@ input {
         left: 10px;
     }
 }
+
+@media (orientation: portrait) {
+    #fullscreen-btn, #info-btn {
+        transform: rotate(90deg);
+    }
+}

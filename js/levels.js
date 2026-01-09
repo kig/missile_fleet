@@ -606,15 +606,13 @@ export const MenuLevel = Klass(Level, {
         var bg = new ElementNode(
             E("div", {
                 style: {
-                    width: "100vw",
-                    height: "100vh",
-                    marginTop: "-50vh",
-                    marginLeft: "-50vw",
+                    width: "640px",
+                    height: "480px",
                     backgroundColor: this.bgColor,
                     opacity: 0.5,
                 },
             }),
-            { x: 320, y: 240, zIndex: 1001 }
+            { x: 0, y: 0, zIndex: 1001 }
         );
         controls.append(bg);
         controls.display = "none";
