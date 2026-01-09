@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        />
+        <title>MISSILE FLEET</title>
+        <link rel="stylesheet" href="css/style.css" />
+        <link rel="manifest" href="__MANIFEST_URL__" />
+        <meta name="theme-color" content="#000000" />
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="192x192"
+            href="__ICON_192_URL__"
+        />
+        <link rel="apple-touch-icon" href="__ICON_192_URL__" />
+        <meta
+            name="description"
+            content="Missile Fleet - Real-Time Tactics Game"
+        />
+    </head>
+    <body>
+        <div id="info-overlay" class="hidden">
+            <div id="info-content">
+              <button id="close-info">×</button>
+              <div id="debug">
+                  <h3>Real-time tactics game</h3>
+                  <p>Find the right tactic to take out the blue fleet.</p>
+                  <p>
+                      Controls: click, shift-click, drag-select, or tap/drag on
+                      touch devices. Double-tap to clear selection.
+                  </p>
+                  <p>The lines tell you what the ship is doing.</p>
+                  <p>The size of the colored triangle tells the ship's level.</p>
+                  <p>Some levels need a good deal of luck, so keep trying.</p>
+              </div>
+            </div>
+        </div>
+        <script type="module">
+            import { init } from "./js/main.js";
+            init();
+
+            // Register service worker
+            if (import.meta.env.PROD && "serviceWorker" in navigator) {
+                navigator.serviceWorker
+                    .register("__SW_URL__", { updateViaCache: "none" })
+                    .then((registration) => {
+                        console.log(
+                            "Service Worker registered with scope:",
+                            registration.scope
+                        );
+                    })
+                    .catch((error) => {
+                        console.log("Service Worker registration failed:", error);
+                    });
+            }
+        </script>
+    </body>
+</html>
