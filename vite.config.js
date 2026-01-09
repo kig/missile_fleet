@@ -24,12 +24,14 @@ function* walkFiles(dir) {
 
 function cacheBustingEntrypointsPlugin() {
     let isBuild = false;
+    let viteRootDir = process.cwd();
 
     return {
         name: 'missile-fleet-cache-busting-entrypoints',
         enforce: 'post',
         configResolved(config) {
             isBuild = config.command === 'build';
+            viteRootDir = config.root; // <- important when moving source under src/
         },
         transformIndexHtml(html) {
             // In dev, keep things simple: serve the source files.
@@ -43,7 +45,7 @@ function cacheBustingEntrypointsPlugin() {
             return html;
         },
         generateBundle(_options, bundle) {
-            const rootDir = process.cwd();
+            const rootDir = viteRootDir;
 
             const emitHashedAsset = (relPath) => {
                 const absPath = resolve(rootDir, relPath);
@@ -169,15 +171,16 @@ function cacheBustingEntrypointsPlugin() {
     };
 }
 
-export default defineConfig({
+export default defineConfig(() => ({
+    root: 'src',
     base: './',
     build: {
-        outDir: 'dist',
+        outDir: '../dist',
         emptyOutDir: true,
         rollupOptions: {
             input: {
-                main: resolve(process.cwd(), 'index.html'),
-                sw: resolve(process.cwd(), 'sw.js'),
+                main: resolve(process.cwd(), 'src/index.html'),
+                sw: resolve(process.cwd(), 'src/sw.js'),
             },
             output: {
                 // Keep service worker at the site root so it can control the whole app.
@@ -188,4 +191,4 @@ export default defineConfig({
         },
     },
     plugins: [cacheBustingEntrypointsPlugin()],
-});
+}));
