@@ -4,56 +4,54 @@
   "description": "Real-Time Tactics Game",
   "lang": "en",
   "dir": "ltr",
-
   "id": "./",
   "start_url": "./index.html",
   "scope": "./",
-
   "display": "fullscreen",
   "background_color": "#000000",
   "theme_color": "#000000",
-
-  "categories": ["games", "entertainment"],
-
+  "categories": [
+    "games",
+    "entertainment"
+  ],
   "icons": [
     {
-      "src": "./icons/icon-192.png",
+      "src": "./assets/icon-192-15dbc4548284.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "./icons/icon-512.png",
+      "src": "./assets/icon-512-bf2d88f1ef98.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
   ],
-
   "screenshots": [
     {
-     "src": "./screenshots/desktop_1.jpg",
+      "src": "./assets/desktop_1-aa86905a913e.jpg",
       "sizes": "1280x721",
       "type": "image/jpeg",
       "form_factor": "wide",
       "label": "Title Screen"
     },
     {
-     "src": "./screenshots/desktop_1.jpg",
+      "src": "./assets/desktop_1-aa86905a913e.jpg",
       "sizes": "1280x721",
       "type": "image/jpeg",
       "form_factor": "wide",
       "label": "Title Screen"
     },
     {
-     "src": "./screenshots/mobile_1.jpg",
+      "src": "./assets/mobile_1-1503d0ab528e.jpg",
       "sizes": "640x960",
       "type": "image/jpeg",
       "form_factor": "narrow",
       "label": "Title Screen"
     },
     {
-     "src": "./screenshots/mobile_1.jpg",
+      "src": "./assets/mobile_1-1503d0ab528e.jpg",
       "sizes": "640x960",
       "type": "image/jpeg",
       "form_factor": "narrow",
