@@ -1,3 +1,5 @@
+import { V } from "./math.js";
+
 export const Formation = Klass({
     initialize: function () {
         this.ships = [];

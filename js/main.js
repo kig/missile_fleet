@@ -1,3 +1,6 @@
+import './cake/index.js';
+import './support.js';
+
 import {
     MenuLevel,
     Level1,

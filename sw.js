@@ -1,36 +1,16 @@
-const CACHE_NAME = 'missile-fleet-v2';
-const urlsToCache = [
-  './index.html',
-  './manifest.json',
-  './css/style.css',
-  './js/cake.js',
-  './js/formation.js',
-  './js/support.js',
-  './js/weapons.js',
-  './js/main.js',
-  './js/levels.js',
-  './js/ship.js',
-  './js/math.js',
-  './js/explosion.js',
-  './js/player.js',
-  './js/touch_controls.js',
-  './js/projectile.js',
-  './js/fullscreen.js',
-  './js/level.js',
-  './js/controlled_node.js',
-];
+const CACHE_NAME = 'missile-fleet-' + '__BUILD_HASH__';
+
+const PRECACHE_URLS = __PRECACHE_URLS__;
 
 // Install event - cache resources
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Opened cache');
-        // Cache resources one by one to avoid failing if one resource is missing
         return Promise.allSettled(
-          urlsToCache.map(url =>
-            cache.add(url).catch(err => {
-              console.warn(`Failed to cache ${url}:`, err);
+          (PRECACHE_URLS || []).map((url) =>
+            cache.add(url).catch((err) => {
+              console.warn(`Failed to precache ${url}:`, err);
               return Promise.resolve();
             })
           )
@@ -58,56 +38,49 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+
+  const isNavigation = event.request.mode === 'navigate' || event.request.destination === 'document';
+
   event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Cache hit - return response
-        if (response) {
-          return response;
-        }
+    (async () => {
+      const cache = await caches.open(CACHE_NAME);
 
-        // Clone the request
-        const fetchRequest = event.request.clone();
-
-        return fetch(fetchRequest).then((response) => {
-          // Check if valid response
-          if (!response || response.status !== 200) {
-            return response;
+      if (isNavigation) {
+        try {
+          const networkResponse = await fetch(event.request);
+          if (networkResponse && networkResponse.status === 200) {
+            cache.put(event.request, networkResponse.clone());
           }
-
-          // Only cache successful responses (but allow opaque responses for CORS)
-          if (response.type === 'basic' || response.type === 'cors') {
-            // Clone the response
-            const responseToCache = response.clone();
-
-            // Cache the new resource
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-          }
-
-          return response;
-        }).catch(() => {
-          // Provide context-specific offline fallbacks
-          if (event.request.destination === 'document') {
-            // For HTML requests, try to return cached index page
-            return caches.match('./index.html').then(cachedResponse => {
-              return cachedResponse || new Response('Offline - Please visit while online first', {
-                status: 503,
-                statusText: 'Service Unavailable',
-                headers: new Headers({
-                  'Content-Type': 'text/plain'
-                })
-              });
-            });
-          }
-          // For other resources, just indicate offline
-          return new Response('', {
+          return networkResponse;
+        } catch {
+          const cached = await cache.match(event.request);
+          if (cached) return cached;
+          const fallback = await cache.match('./');
+          if (fallback) return fallback;
+          return new Response('Offline', {
             status: 503,
-            statusText: 'Service Unavailable'
+            statusText: 'Service Unavailable',
+            headers: new Headers({ 'Content-Type': 'text/plain' }),
           });
+        }
+      }
+
+      const cached = await cache.match(event.request);
+      if (cached) return cached;
+
+      try {
+        const networkResponse = await fetch(event.request);
+        if (networkResponse && networkResponse.status === 200 && (networkResponse.type === 'basic' || networkResponse.type === 'cors')) {
+          cache.put(event.request, networkResponse.clone());
+        }
+        return networkResponse;
+      } catch {
+        return new Response('', {
+          status: 503,
+          statusText: 'Service Unavailable',
         });
-      })
+      }
+    })()
   );
 });

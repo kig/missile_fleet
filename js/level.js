@@ -13,9 +13,7 @@ export const Level = Klass(CanvasNode, {
     initialize: function () {
         CanvasNode.initialize.call(this);
         this.ships = {};
-        this.bg = new Rectangle(10000, 10000);
-        this.bg.x = -5000;
-        this.bg.y = -5000;
+        this.bg = new Rectangle(this.width, this.height);
         this.bg.fill = this.bgColor;
         this.bg.fillOpacity = this.bgOpacity;
         var selectionStart, startX, startY;
