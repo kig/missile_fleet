@@ -1,5 +1,7 @@
 import { Player } from "./player.js";
 import { DEFAULT_CURSOR, MOVE_TO_CURSOR } from "./main.js";
+import { Missiles, Beam, RapidFireRailgun, PointDefenseMissiles, PointDefenseGun } from "./weapons.js";
+import { Ship } from "./ship.js";
 
 export const Level = Klass(CanvasNode, {
     bgColor: "rgb(0,0,0)",
@@ -11,7 +13,9 @@ export const Level = Klass(CanvasNode, {
     initialize: function () {
         CanvasNode.initialize.call(this);
         this.ships = {};
-        this.bg = new Rectangle(this.width, this.height);
+        this.bg = new Rectangle(10000, 10000);
+        this.bg.x = -5000;
+        this.bg.y = -5000;
         this.bg.fill = this.bgColor;
         this.bg.fillOpacity = this.bgOpacity;
         var selectionStart, startX, startY;
@@ -45,7 +49,6 @@ export const Level = Klass(CanvasNode, {
         this.bg.addEventListener(
             "mousedown",
             function (ev) {
-                console.log('bg mousedown');
                 ev.preventDefault();
                 var point = CanvasSupport.tMatrixMultiplyPoint(
                     CanvasSupport.tInvertMatrix(this.currentMatrix),

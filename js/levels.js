@@ -662,7 +662,6 @@ export const MenuLevel = Klass(Level, {
         this.bg.addEventListener(
             "click",
             function () {
-                console.log('click menu');
                 if (!th.menuVisible) {
                     th.showMenu();
                 }

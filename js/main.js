@@ -56,6 +56,8 @@ export const MissileFleet = Klass(CanvasNode, {
         this.bg.fillOpacity = this.bgOpacity;
         this.bg.x = -2500;
         this.bg.y = -2500;
+        this.bg.z = -1;
+        this.bg.catchMouse = false;
         this.canvas.append(this.bg);
         const resize = () => {
             const iw = window.innerWidth * devicePixelRatio;
