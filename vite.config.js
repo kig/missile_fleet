@@ -91,7 +91,6 @@ function cacheBustingEntrypointsPlugin() {
             }
 
             const emittedManifest = JSON.stringify(manifestObj, null, 2) + '\n';
-            const manifestHash = createHash('sha256').update(emittedManifest).digest('hex').slice(0, 12);
 
             this.emitFile({
                 type: 'asset',
@@ -125,7 +124,7 @@ function cacheBustingEntrypointsPlugin() {
             const precache = new Set();
             precache.add('./');
             precache.add('./index.html');
-            precache.add(`./${manifestFileName}?v=${manifestHash}`);
+            precache.add(`./${manifestFileName}`);
             precache.add(`./${swFileName}`);
 
             for (const item of Object.values(bundle)) {
@@ -158,7 +157,7 @@ function cacheBustingEntrypointsPlugin() {
 
             const html = String(htmlAsset.source);
             htmlAsset.source = html
-                .replaceAll(MANIFEST_PLACEHOLDER, `./${manifestFileName}?v=${manifestHash}`)
+                .replaceAll(MANIFEST_PLACEHOLDER, `./${manifestFileName}`)
                 .replaceAll(SW_PLACEHOLDER, `./${swFileName}`);
 
             // Rewrite icon placeholders to hashed icon URLs.
